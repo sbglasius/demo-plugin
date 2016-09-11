@@ -10,15 +10,17 @@ buildscript {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
     }
 }
+plugins {
+  id "com.jfrog.artifactory" version "4.4.0"
+}
 
-version "0.1"
-group "demoplugin"
+version "0.1-SNAPSHOT"
+group "org.grails.plugins"
 
 apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"org.grails.grails-plugin"
 apply plugin:"org.grails.grails-plugin-publish"
-
 ext {
     grailsVersion = project.grailsVersion
     gradleWrapperVersion = project.gradleWrapperVersion
@@ -46,17 +48,44 @@ dependencies {
     provided "org.grails:grails-plugin-domain-class"
     testCompile "org.grails:grails-plugin-testing"
 }
+
+bintray {
+  pkg {
+    userOrg = '' // If you want to publish to an organization
+    name = "$project.name"
+    issueTrackerUrl = "https://github.com/sbglasius/grails-$project.name/issues"
+    vcsUrl = "https://github.com/sbglasius/grails-$project.name"
+    version {
+      attributes = ['grails-plugin': "$project.group:$project.name"]
+      name = project.version
+    }
+  }
+}
+artifactory {
+    contextUrl = 'http://oss.jfrog.org'
+    publish {
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = System.getenv("BINTRAY_USER") ?: project.bintrayUser
+            password = System.getenv("BINTRAY_KEY") ?: project.bintrayKey
+        }
+        defaults {
+            publications('maven')
+        }
+    }
+
+}
 grailsPublish {
     // TODO: Provide values here
-    user = 'user'
-    key = 'key'
-    githubSlug = 'foo/bar'
+    user = System.getenv("BINTRAY_USER") ?: project.bintrayUser
+    key = System.getenv("BINTRAY_KEY") ?: project.bintrayKey
+    githubSlug = 'https://github.com/sbglasius/grails-$project.name'
     license {
         name = 'Apache-2.0'
     }
-    title = "My Plugin"
-    desc = "Full plugin description"
-    developers = [johndoe:"John Doe"]
-    portalUser = ""
-    portalPassword = ""    
+    title = "Demo plugin"
+    desc = "Please ignore"
+    developers = [sbglasius:"Soeren Glasius"]
+    portalUser = System.getenv("GRAILS_PORTAL_USER") ?: project.grailsPortalUser
+    portalPassword = System.getenv("GRAILS_PORTAL_PASSWORD") ?: project.grailsPortalPassword
 }
