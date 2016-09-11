@@ -10,11 +10,8 @@ buildscript {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
     }
 }
-plugins {
-  id "com.jfrog.artifactory" version "4.4.0"
-}
 
-version "0.1-SNAPSHOT"
+version "0.1.2"
 group "org.grails.plugins"
 
 apply plugin:"eclipse"
@@ -61,20 +58,7 @@ bintray {
     }
   }
 }
-artifactory {
-    contextUrl = 'http://oss.jfrog.org'
-    publish {
-        repository {
-            repoKey = 'oss-snapshot-local'
-            username = System.getenv("BINTRAY_USER") ?: project.bintrayUser
-            password = System.getenv("BINTRAY_KEY") ?: project.bintrayKey
-        }
-        defaults {
-            publications('maven')
-        }
-    }
 
-}
 grailsPublish {
     // TODO: Provide values here
     user = System.getenv("BINTRAY_USER") ?: project.bintrayUser
